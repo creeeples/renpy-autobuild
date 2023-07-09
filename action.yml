@@ -1,10 +1,5 @@
 name: Ren'Py Autobuild and Deploy
-author: 'Jason || Creeeples'
-description: "A simple build action for Ren'Py projects using Docker"
-branding:
-  color: 'gray-dark'
-  icon: 'archive'
-  
+
 on:
   push:
     branches:
@@ -50,6 +45,11 @@ jobs:
         SDL_AUDIODRIVER: dummy
         SDL_VIDEODRIVER: dummy
 
+    - name: List build Files
+      run: |
+        echo "${{ steps.build_project.outputs.dir }}"
+        echo "${{ steps.build_project.outputs.version }}"
+
     - name: Setup GitHub Release
       uses: softprops/action-gh-release@v1
       with:
@@ -60,7 +60,7 @@ jobs:
 
     - name: Upload each zip file
       run: |
-        for file in ${{ steps.build_project.outputs.out_dir }}/*.zip; do
+        for file in ${{ steps.build_project.outputs.dir }}/*.zip; do
         echo "Uploading $file"
         asset_name=$(basename "$file")
         gh release upload ${{ steps.format_tag_name.outputs.tag_name }} "$file" --clobber
