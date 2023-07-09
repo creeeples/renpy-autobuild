@@ -37,7 +37,7 @@ jobs:
         
     - name: Build VN project
       id: build_project
-      uses: ProjectAliceDev/renpy-build-action@master
+      uses: creeeples/renpy-builder@v1.0.0
       with:
         sdk-version: '8.1.1'
         project-dir: './game/'
