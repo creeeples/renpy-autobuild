@@ -1,9 +1,6 @@
 name: Ren'Py Autobuild and Deploy
-
-on:
-  push:
-    branches:
-      - 'release/*'
+author: 'Jason || Creeeples'
+description: "A combined build and deploy action for Ren'Py projects using Docker"
 
 jobs:
   build-renpy:
