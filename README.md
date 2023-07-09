@@ -4,11 +4,70 @@ This GitHub action allows you to automate the creation of Renpy builds. This bui
 Git Release.
 
 ```yaml
-steps:
-  - name: Ren'Py Autobuild and Deploy
-    uses: creeeples/renpy-autobuild@v1
-    with:
-      version: '1.0.0'
+name: Ren'Py Autobuild + Deploy
+
+on:
+  push:
+    branches:
+      - 'release/*'
+
+jobs:
+  build-renpy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Extract Version from Branch Name
+      id: extract_version
+      run: |
+          echo "old GITHUB_REF is $GITHUB_REF"
+          GITHUB_REF=$(echo $GITHUB_REF | sed -e "s#refs/heads/release/##g")
+          echo "::set-output name=ref::$GITHUB_REF"
+      env:
+        GITHUB_REF: ${{ github.ref }}
+
+    - name: Format Release Name
+      id: format_release_name
+      run: |
+        echo "::set-output name=release_name::Release-${{ steps.extract_version.outputs.ref }}"
+      env:
+        VERSION: ${{ steps.extract_version.outputs.ref }}
+        
+    - name: Format Release Tag
+      id: format_tag_name
+      run: |
+        echo "::set-output name=tag_name::v${{ steps.extract_version.outputs.ref }}"
+      env:
+        VERSION: ${{ steps.extract_version.outputs.ref }}
+        
+    - name: Build VN Project
+      id: build_project
+      uses: creeeples/renpy-docker-builder@v1.0.1
+      with:
+        sdk-version: '8.1.1'
+        project-dir: './game/'
+      env:
+        SDL_AUDIODRIVER: dummy
+        SDL_VIDEODRIVER: dummy
+
+    - name: Setup GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        token: ${{ github.token }}
+        tag_name: ${{ steps.format_tag_name.outputs.tag_name }}
+      env:
+          GH_TOKEN: ${{ github.token }}
+
+    - name: Upload All Build Folders
+      run: |
+        for file in ${{ steps.build_project.outputs.dir }}/*.zip; do
+        echo "Uploading $file"
+        asset_name=$(basename "$file")
+        gh release upload ${{ steps.format_tag_name.outputs.tag_name }} "$file" --clobber
+        done
+      env:
+          GH_TOKEN: ${{ github.token }}
 ```
 
 ## Setup
