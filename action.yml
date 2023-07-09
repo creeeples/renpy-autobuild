@@ -1,4 +1,4 @@
-name: Autodeploy
+name: Ren'Py Autobuild and Deploy
 
 on:
   push:
