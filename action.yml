@@ -1,6 +1,9 @@
-name: Ren'Py Autobuild and Deploy
-author: 'Jason || Creeeples'
-description: "A combined build and deploy action for Ren'Py projects using Docker"
+name: Ren'Py Autobuild + Deploy
+
+on:
+  push:
+    branches:
+      - 'release/*'
 
 jobs:
   build-renpy:
@@ -9,7 +12,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Extract version from branch name
+    - name: Extract Version from Branch Name
       id: extract_version
       run: |
           echo "old GITHUB_REF is $GITHUB_REF"
@@ -18,34 +21,29 @@ jobs:
       env:
         GITHUB_REF: ${{ github.ref }}
 
-    - name: Format release name
+    - name: Format Release Name
       id: format_release_name
       run: |
         echo "::set-output name=release_name::Release-${{ steps.extract_version.outputs.ref }}"
       env:
         VERSION: ${{ steps.extract_version.outputs.ref }}
         
-    - name: Format tag name
+    - name: Format Release Tag
       id: format_tag_name
       run: |
         echo "::set-output name=tag_name::v${{ steps.extract_version.outputs.ref }}"
       env:
         VERSION: ${{ steps.extract_version.outputs.ref }}
         
-    - name: Build VN project
+    - name: Build VN Project
       id: build_project
-      uses: creeeples/renpy-builder@v1.0.0
+      uses: creeeples/renpy-builder@v1.0.1
       with:
         sdk-version: '8.1.1'
         project-dir: './game/'
       env:
         SDL_AUDIODRIVER: dummy
         SDL_VIDEODRIVER: dummy
-
-    - name: List build Files
-      run: |
-        echo "${{ steps.build_project.outputs.dir }}"
-        echo "${{ steps.build_project.outputs.version }}"
 
     - name: Setup GitHub Release
       uses: softprops/action-gh-release@v1
@@ -55,7 +53,7 @@ jobs:
       env:
           GH_TOKEN: ${{ github.token }}
 
-    - name: Upload each zip file
+    - name: Upload All Build Folders
       run: |
         for file in ${{ steps.build_project.outputs.dir }}/*.zip; do
         echo "Uploading $file"
