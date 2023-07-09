@@ -1,5 +1,10 @@
 name: Ren'Py Autobuild + Deploy
-
+author: 'Jason || Creeeples'
+description: "A simple build action for Ren'Py projects using Docker"
+branding:
+  color: 'blue'
+  icon: 'box'
+  
 on:
   push:
     branches:
