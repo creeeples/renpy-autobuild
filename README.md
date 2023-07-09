@@ -3,6 +3,14 @@
 This GitHub action allows you to automate the creation of Renpy builds. This builds all distribution types and then uploads them to the corresponding 
 Git Release.
 
+```yaml
+steps:
+  - name: Ren'Py Autobuild and Deploy
+    uses: creeeples/renpy-autobuild@v1
+    with:
+      version: '1.0.0'
+```
+
 ## Setup
   1. Create a new workflow by clicking 'Actions' in the Repository View of GitHub Web.
   2. Select 'New Workflow' in the top-left corner of the actions page.
