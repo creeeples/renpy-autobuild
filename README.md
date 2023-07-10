@@ -42,8 +42,8 @@ This action requires the following dependencies. This is handled by GitHub and d
   5. Action should run whenever a branch prefixed with release/ is pushed to the repository.
 
 ```yaml
-name: Ren'Py Autobuild + Deploy
-  
+name: Ren'Py Autobuild + Deploy (Creeeples v1.0.3)
+
 on:
   push:
     branches:
@@ -132,7 +132,7 @@ jobs:
         # NOTE: ONLY ONE CHANNEL IS ALLOWED AT THIS TIME. 
         files: |
           mac ${{ steps.build_project.outputs.dir }}/*-mac.zip
-          linux ${{ steps.build_project.outputs.dir }}/*-pc.zip 
+          linux ${{ steps.build_project.outputs.dir }}/*-linux.tar.bz2
           windows ${{ steps.build_project.outputs.dir }}/*-pc.zip
           
         # If no channel is provided for a file, to generate one from the
