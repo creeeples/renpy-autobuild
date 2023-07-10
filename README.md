@@ -35,7 +35,7 @@ This action requires the following dependencies. This is handled by GitHub and d
   2. Click on 'Skips this Step and Set Up a Workflow Yourself'.
   3. Copy and paste the following code into the editor and update the following values...
       - `project-dir` - The directory of your Ren'Py project. This is relative to the root of your repository. 
-      The default value is `./game/` and most projects will not need to be modified.
+      The default value is `.` and most projects will not need to be modified -- This assumes that ./game/ is where all your game files are stored. If you used Renpy to initialize your project, you should be ok!
       - itch_user - Your itch.io username. This is the username you use to log into itch.io.
       - itch_game - The name of your game on itch.io. This is the name of the game in the URL.
   4. Click 'Commit Changes...' and commit your changes to the repository.
@@ -84,7 +84,7 @@ jobs:
       uses: creeeples/renpy-docker-builder@latest
       with:
         sdk-version: '8.1.1'
-        project-dir: './game/'
+        project-dir: '.'
       env:
         SDL_AUDIODRIVER: dummy
         SDL_VIDEODRIVER: dummy
