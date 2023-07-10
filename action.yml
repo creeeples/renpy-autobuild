@@ -67,32 +67,31 @@ jobs:
         done
       env:
           GH_TOKEN: ${{ github.token }}
-
+          
     - name: ItchIO Upload
-    - uses: Ayowel/butler-to-itch@v1.0.0
+      uses: Ayowel/butler-to-itch@v1.0.0
       with:
-        # Whether to install Butler or to push a file.
-        # This may be used when you want to use Butler with custom
-        # commands.
         action: "push"
-    # Where Butler should be installed.
         install_dir: ~/.butler
 
     ###### Push options ######
     # Your butler key (see https://itch.io/user/settings/api-keys)
-        butler_key: "6AnuB8JAVzV6vNwdDoineCxi1C6ypI4Pwuxd9qZD"
+        butler_key: ""
     # The itch username of the user that distributes the game
-        itch_user: "creeeples"
+        itch_user: ""
     # The name of the game in the project's url
         itch_game: "upload-test"
     # The game version number
         version: "${{ steps.format_tag_name.outputs.tag_name }}"
     # The files to push to itch.
     # File paths support globing and may start with a channel name.
-        files: "${{ steps.build_project.outputs.dir }}/*.zip"
+        files: |
+          mac ${{ steps.build_project.outputs.dir }}/*-mac.zip
+          linux ${{ steps.build_project.outputs.dir }}/*-pc.zip 
+          windows ${{ steps.build_project.outputs.dir }}/*-pc.zip
     # If no channel is provided for a file, to generate one from the
     # file's name.
-        auto_channel: true
+        auto_channel: false
 
     ###### Install options ######
     # Whether to verify the downloaded Butler archive's signature
@@ -100,5 +99,4 @@ jobs:
     # Whether to update the PATH variable to include Butler's
     # install directory
         update_path: false
-    # Which Butler version to install
         butler_version: "latest"
