@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - 'release/*'
+      - 'prerelease/*'
 
 jobs:
   build-renpy:
@@ -21,7 +22,7 @@ jobs:
       id: extract_version
       run: |
           echo "old GITHUB_REF is $GITHUB_REF"
-          GITHUB_REF=$(echo $GITHUB_REF | sed -e "s#refs/heads/release/##g")
+          GITHUB_REF=$(echo $GITHUB_REF | sed -e "s#refs/heads/\(release\|prerelease\)/##g")
           echo "::set-output name=ref::$GITHUB_REF"
       env:
         GITHUB_REF: ${{ github.ref }}
@@ -55,6 +56,7 @@ jobs:
       with:
         token: ${{ github.token }}
         tag_name: ${{ steps.format_tag_name.outputs.tag_name }}
+        prerelease: ${{ startsWith(github.ref, 'refs/heads/prerelease/') }} # Set prerelease flag conditionally
       env:
           GH_TOKEN: ${{ github.token }}
 
@@ -69,6 +71,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           
     - name: ItchIO Upload
+      if: startsWith(github.ref, 'refs/heads/release/') # Skip this step for prerelease branch
       uses: Ayowel/butler-to-itch@v1.0.0
       with:
         action: "push"
