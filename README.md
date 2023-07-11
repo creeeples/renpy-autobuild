@@ -42,7 +42,7 @@ This action requires the following dependencies. This is handled by GitHub and d
   5. Action should run whenever a branch prefixed with release/ is pushed to the repository.
 
 ```yaml
-name: Ren'Py Autobuild + Deploy (Creeeples v1.0.3)
+name: Ren'Py Autobuild + Deploy (Creeeples v1.0.0)
 
 on:
   push:
