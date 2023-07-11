@@ -110,7 +110,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           
     - name: ItchIO Upload
-    if: startsWith(github.ref, 'refs/heads/release/') # Skip this step for prerelease branch
+      if: startsWith(github.ref, 'refs/heads/release/') # Skip this step for prerelease branch
       uses: Ayowel/butler-to-itch@v1.0.0
       with:
         action: "push"
