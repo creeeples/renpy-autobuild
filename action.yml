@@ -62,7 +62,7 @@ jobs:
 
     - name: Upload All Build Folders
       run: |
-        for file in ${{ steps.build_project.outputs.dir }}/*.zip; do
+        for file in ${{ steps.build_project.outputs.dir }}/*.{zip,tar.bz2}; do
         echo "Uploading $file"
         asset_name=$(basename "$file")
         gh release upload ${{ steps.format_tag_name.outputs.tag_name }} "$file" --clobber
