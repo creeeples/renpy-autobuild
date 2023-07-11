@@ -11,7 +11,7 @@ If you like my work, consider checking me out on Twitter @Creeeples or at www.cr
 This action requires the following dependencies. This is handled by GitHub and does not need any configuration by the user.
 
 - actions/checkout@v2
-- creeeples/renpy-docker-builder@latest
+- creeeples/renpy-docker-builder@v1.0.2
 - softprops/action-gh-release@v1
 - Ayowel/butler-to-itch@v1.0.0
 
