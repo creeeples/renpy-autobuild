@@ -82,7 +82,7 @@ jobs:
         
     - name: Build VN Project
       id: build_project
-      uses: creeeples/renpy-docker-builder@latest
+      uses: creeeples/renpy-docker-builder@v1.0.2
       with:
         sdk-version: '8.1.1'
         project-dir: '.'
