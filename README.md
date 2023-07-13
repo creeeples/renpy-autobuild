@@ -42,8 +42,7 @@ This action requires the following dependencies. This is handled by GitHub and d
   5. Action should run whenever a branch prefixed with release/ is pushed to the repository.
 
 ```yaml
-name: Ren'Py Autobuild + Deploy (Creeeples v1.0.0)
-
+name: Ren'Py Autobuild + Deploy (Creeeples v1.0.4)
 on:
   push:
     branches:
@@ -97,7 +96,7 @@ jobs:
         tag_name: ${{ steps.format_tag_name.outputs.tag_name }}
         prerelease: ${{ startsWith(github.ref, 'refs/heads/prerelease/') }} # Set prerelease flag conditionally
       env:
-          GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ github.token }}
 
     - name: Upload All Build Folders
       run: |
@@ -107,8 +106,13 @@ jobs:
         gh release upload ${{ steps.format_tag_name.outputs.tag_name }} "$file" --clobber
         done
       env:
-          GH_TOKEN: ${{ github.token }}
-          
+        GH_TOKEN: ${{ github.token }}
+
+    - name: Set Git Config
+      run: |
+        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+        git config --global user.name "${{ github.actor }}"
+
     - name: ItchIO Upload
       if: startsWith(github.ref, 'refs/heads/release/') # Skip this step for prerelease branch
       uses: Ayowel/butler-to-itch@v1.0.0
@@ -151,6 +155,26 @@ jobs:
         # install directory
         update_path: false
         butler_version: "latest"
+        
+    - name: Add files to branch
+      run: |
+        cd game
+        git checkout -b "rpyc/v${{ steps.extract_version.outputs.ref }}"
+        git add ./*.rpyc
+        git commit -m "Add rpyc files for v${{ steps.extract_version.outputs.ref }}"
+        git push origin rpyc/v${{ steps.extract_version.outputs.ref }}
+
+    - name: Remove untracked files
+      run: sudo git clean -fd
+
+    - name: Create Pull Request to Main
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ github.token }}
+        branch: "rpyc/v${{ steps.extract_version.outputs.ref }}"
+        title: "RYPC files for v${{ steps.extract_version.outputs.ref }}"
+        body: "This pull request adds the RYPC files for v${{ steps.extract_version.outputs.ref }}."
+        base: main
 ```
 
 ### Running the Action
@@ -166,6 +190,7 @@ jobs:
   4. The action should run and build your project -- this may take a few minutes depending on the size of your project and you can check build progress by 
   clicking 'Actions' at the top of your Git repository.
   5. If the action ran successfully, you should see a new release on GitHub and a new build uploaded Itch.io.
+  6. Git Actions will perform a merge request to your main branch with the up to date .rpyc
 
 ## Usage
 After setting up the action in your GitHub repository, kicking off the action is simply. This action makes a few assumptions
