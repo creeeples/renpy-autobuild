@@ -1,10 +1,4 @@
-name: Ren'Py Autobuild + Deploy (Creeeples v1.0.0)
-author: 'Jason || Creeeples'
-description: "A simple build action for Ren'Py projects using Docker"
-branding:
-  color: 'blue'
-  icon: 'box'
-  
+name: Ren'Py Autobuild + Deploy (Creeeples v1.0.4)
 on:
   push:
     branches:
@@ -58,7 +52,7 @@ jobs:
         tag_name: ${{ steps.format_tag_name.outputs.tag_name }}
         prerelease: ${{ startsWith(github.ref, 'refs/heads/prerelease/') }} # Set prerelease flag conditionally
       env:
-          GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ github.token }}
 
     - name: Upload All Build Folders
       run: |
@@ -68,8 +62,13 @@ jobs:
         gh release upload ${{ steps.format_tag_name.outputs.tag_name }} "$file" --clobber
         done
       env:
-          GH_TOKEN: ${{ github.token }}
-          
+        GH_TOKEN: ${{ github.token }}
+
+    - name: Set Git Config
+      run: |
+        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+        git config --global user.name "${{ github.actor }}"
+
     - name: ItchIO Upload
       if: startsWith(github.ref, 'refs/heads/release/') # Skip this step for prerelease branch
       uses: Ayowel/butler-to-itch@v1.0.0
@@ -112,3 +111,23 @@ jobs:
         # install directory
         update_path: false
         butler_version: "latest"
+        
+    - name: Add files to branch
+      run: |
+        cd game
+        git checkout -b "rpyc/v${{ steps.extract_version.outputs.ref }}"
+        git add ./*.rpyc
+        git commit -m "Add rpyc files for v${{ steps.extract_version.outputs.ref }}"
+        git push origin rpyc/v${{ steps.extract_version.outputs.ref }}
+
+    - name: Remove untracked files
+      run: sudo git clean -fd
+
+    - name: Create Pull Request to Main
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ github.token }}
+        branch: "rpyc/v${{ steps.extract_version.outputs.ref }}"
+        title: "RYPC files for v${{ steps.extract_version.outputs.ref }}"
+        body: "This pull request adds the RYPC files for v${{ steps.extract_version.outputs.ref }}."
+        base: main
